@@ -16,3 +16,7 @@ socket.on('disconnect', function () {
 socket.on('newMessage', function(msg) {
     console.log('New message: ', msg);
 });
+
+socket.on('connected', function(data) {
+    console.log(data);
+});
