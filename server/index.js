@@ -7,6 +7,8 @@ const socketIO = require('socket.io');
 const publicPath = path.join(__dirname, '../public');
 var port = process.env.PORT || 3000;
 
+const { messageGenerator } = require('./utils/message');
+
 var app = express();
 var server = http.createServer(app);
 var io = socketIO(server);
@@ -15,19 +17,15 @@ var io = socketIO(server);
 io.on('connection', (socket) => {
     console.log(`--- New user connected ---`);
 
-    socket.emit('connected', 'Welcome to the chat!');
+    socket.emit('connected', messageGenerator('Admin', 'Welcome to the chat!'));
     //emit event to all but this socket
-    socket.broadcast.emit('connected','New user joined chat!');
+    socket.broadcast.emit('connected', messageGenerator('Admin', 'New user joined chat!'));
 
     socket.on('createMessage', (msg) => {
         console.log('New message from user: ', msg);
 
         //emit event to all sockets
-        io.emit('newMessage', {
-            from: msg.from,
-            text: msg.text,
-            createdAt: +new Date()
-        })
+        io.emit('newMessage', messageGenerator(msg.from, msg.text))
     });
 
     socket.on('disconnect', (socket) => {
