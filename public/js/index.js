@@ -3,10 +3,10 @@ var socket = io(); //creates a connection, upgrade from http -> websocket (fallb
 socket.on('connect', function () {
     console.log(`Connected to server!`);
 
-    socket.emit('createMessage', {
-        from: 'Kuba',
-        text: 'lorem ipsum from client'
-    })
+    // socket.emit('createMessage', {
+    //     from: 'Kuba',
+    //     text: 'lorem ipsum from client'
+    // })
 });
 
 socket.on('disconnect', function () {
