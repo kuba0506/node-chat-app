@@ -21,11 +21,13 @@ io.on('connection', (socket) => {
     //emit event to all but this socket
     socket.broadcast.emit('connected', messageGenerator('Admin', 'New user joined chat!'));
 
-    socket.on('createMessage', (msg) => {
+    socket.on('createMessage', (msg, callback) => {
         console.log('New message from user: ', msg);
 
         //emit event to all sockets
         io.emit('newMessage', messageGenerator(msg.from, msg.text))
+
+        callback('Server got data!'); //send event to the client
     });
 
     socket.on('disconnect', (socket) => {

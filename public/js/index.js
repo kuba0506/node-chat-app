@@ -13,10 +13,17 @@ socket.on('disconnect', function () {
     console.log(`Disconnected from server!`);
 });
 
-socket.on('newMessage', function(msg) {
+socket.on('newMessage', function (msg) {
     console.log('New message: ', msg);
 });
 
-socket.on('connected', function(data) {
+socket.on('connected', function (data) {
+    console.log(data);
+});
+
+socket.emit('createMessage', {
+    from: 'Kuba',
+    text: 'lorem ipsum from client'
+}, function(data) { //acknowledge
     console.log(data);
 });
