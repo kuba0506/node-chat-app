@@ -6,7 +6,7 @@
   "scripts": {
     "start": "nodemon server/index.js",
     "test": "mocha server/**/*.test.js",
-    "test:w": "nodemon --exec 'npm test'"
+    "test:w": "nodemon --exec npm test"
   },
   "engines": {
     "node": ">=6.2.2"
