@@ -2,11 +2,6 @@ var socket = io(); //creates a connection, upgrade from http -> websocket (fallb
 
 socket.on('connect', function () {
     console.log(`Connected to server!`);
-
-    // socket.emit('createMessage', {
-    //     from: 'Kuba',
-    //     text: 'lorem ipsum from client'
-    // })
 });
 
 socket.on('disconnect', function () {
@@ -15,15 +10,28 @@ socket.on('disconnect', function () {
 
 socket.on('newMessage', function (msg) {
     console.log('New message: ', msg);
+    var message = $('<li/>');
+    var messageBox = $('#message-box');
+
+    message.text(`${msg.from}: ${msg.text}`)
+    messageBox.append(message);
 });
 
 socket.on('connected', function (data) {
     console.log(data);
 });
 
-socket.emit('createMessage', {
-    from: 'Kuba',
-    text: 'lorem ipsum from client'
-}, function(data) { //acknowledge
-    console.log(data);
+//form
+$('#chat-form').on('submit', function(e) {
+    e.preventDefault();
+    var input = $('[name=message]');
+
+    socket.emit('createMessage', {
+        from: 'User',
+        text: input.val()
+    }, function(data) {
+        console.log(data);
+    });
+
+    input.val('');
 });
