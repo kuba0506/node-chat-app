@@ -1,5 +1,23 @@
 var socket = io(); //creates a connection, upgrade from http -> websocket (fallback - polling)
 
+//chat scrolling
+var scrollToBottom = function scrollToBottom() {
+    //selectors
+    var messages = $('#message-box');
+    var newMessage = messages.children('li:last-child');
+    //heights
+    var clientHeight = messages.prop('clientHeight');//DOM prop
+    var scrollTop = messages.prop('scrollTop');//DOM prop
+    var scrollHeight = messages.prop('scrollHeight');//DOM prop
+    var newMessageHeight = newMessage.innerHeight(); //takes into account padding
+    var lastMessageHeight = newMessage.prev().innerHeight();
+
+    if (clientHeight + scrollTop  + newMessageHeight + lastMessageHeight >= scrollHeight) {
+      messages.scrollTop(scrollHeight);  
+    }
+};
+
+
 socket.on('connect', function () {
     console.log(`Connected to server!`);
 });
@@ -18,6 +36,7 @@ socket.on('newMessage', function (msg) {
     });
     
     $('#message-box').append(html);
+    scrollToBottom();
 });
 
 socket.on('newLocationMessage', function(msg) {
@@ -30,6 +49,7 @@ socket.on('newLocationMessage', function(msg) {
     });
 
     $('#message-box').append(html);
+    scrollToBottom();
 });
 
 socket.on('connected', function (data) {
