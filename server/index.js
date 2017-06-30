@@ -9,6 +9,7 @@ const node_modules = path.join(__dirname, '../node_modules');
 var port = process.env.PORT || 3000;
 
 const { messageGenerator, locationMessageGenerator } = require('./utils/message');
+const { isRealString } = require('./utils/validation');
 
 var app = express();
 var server = http.createServer(app);
@@ -21,6 +22,13 @@ io.on('connection', (socket) => {
     socket.emit('newMessage', messageGenerator('Admin', 'Welcome to the chat!'));
     //emit event to all but this socket
     socket.broadcast.emit('newMessage', messageGenerator('Admin', 'New user joined chat!'));
+
+    socket.on('join', (params, callback) => {
+        if (!isRealString(params.name) || !isRealString(params.room)) {
+            callback('Name and room is required!');
+        }
+        callback();
+    });
 
     socket.on('createMessage', (msg, callback) => {
         console.log('New message from user: ', msg);
