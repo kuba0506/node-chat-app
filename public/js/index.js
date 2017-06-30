@@ -40,10 +40,9 @@ $('#chat-form').on('submit', function(e) {
         from: 'User',
         text: input.val()
     }, function(data) {
-        console.log(data);
+        input.val('');
+        // console.log(data);
     });
-
-    input.val('');
 });
 
 //geolocation
@@ -55,6 +54,9 @@ locationBtn.on('click', function() {
         return alert('Geolocation not supported by your browser!');
     } 
     
+    //disable btn
+    locationBtn.prop('disabled', true).text('Sending location...');
+
     //require https to work, may be block by a browser
     geolocation.getCurrentPosition(function(pos) {
         console.log(pos);
@@ -62,7 +64,9 @@ locationBtn.on('click', function() {
             latitude: pos.coords.latitude,
             longitude: pos.coords.longitude
         });
+        locationBtn.prop('disabled', false).text('Send location');
     }, function() { //error handler
+        locationBtn.prop('disabled', false).text('Send location');
         alert('Unable to fetch location!');
     });
 });

@@ -26,11 +26,12 @@ io.on('connection', (socket) => {
         console.log('New message from user: ', msg);
 
         //emit event to all sockets
-        // io.emit('newMessage', messageGenerator(msg.from, msg.text))
+        io.emit('newMessage', messageGenerator(msg.from, msg.text))
         //emit to all socket but this one
-        socket.broadcast.emit('newMessage', messageGenerator(msg.from, msg.text))
+        // socket.broadcast.emit('newMessage', messageGenerator(msg.from, msg.text))
 
-        callback('You sent: '+  msg.text); //send event to the client
+        //callback('You sent: '+  msg.text); //send event to the client
+        callback();
     });
 
     socket.on('location', (coords) => {
