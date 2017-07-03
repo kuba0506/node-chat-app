@@ -19,14 +19,28 @@ var io = socketIO(server);
 io.on('connection', (socket) => {
     console.log(`--- New user connected ---`);
 
-    socket.emit('newMessage', messageGenerator('Admin', 'Welcome to the chat!'));
-    //emit event to all but this socket
-    socket.broadcast.emit('newMessage', messageGenerator('Admin', 'New user joined chat!'));
-
     socket.on('join', (params, callback) => {
         if (!isRealString(params.name) || !isRealString(params.room)) {
             callback('Name and room is required!');
         }
+
+        //join room
+        socket.join(params.room);
+
+        //leave room
+        // socket.leave(params.room);
+
+        //io.emit - emit to everyone, 
+        //io.to(room.name).emit - send to all in room
+        //socket.broadcast.emit - to everyone except for current user
+        //socket.broadcast.to(room.name).emit() - send to all except for the sender
+        //socket.emit - to one user
+
+        socket.emit('newMessage', messageGenerator('Admin', 'Welcome to the chat!'));
+        socket.broadcast.to(params.room).emit('newMessage', messageGenerator('Admin', `${params.name} joined chat!`));
+        //emit event to all but this socket
+        //socket.broadcast.emit('newMessage', messageGenerator('Admin', 'New user joined chat!'));
+
         callback();
     });
 
