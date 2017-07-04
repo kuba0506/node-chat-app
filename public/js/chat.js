@@ -37,7 +37,6 @@ socket.on('disconnect', function () {
 });
 
 socket.on('updateUserList', function(users) {
-    console.log('Users list', users);
     var list = $('#users');
     var ol = $('<ol/>');
 
@@ -45,7 +44,6 @@ socket.on('updateUserList', function(users) {
         ol.append($('<li/>').text(user));
     });
     //update user list
-    // list.empty().append(ol);
     list.html(ol);
 });
 
@@ -77,7 +75,7 @@ socket.on('newLocationMessage', function(msg) {
 
 socket.on('connected', function (data) {
     console.log(data);
-});
+});~
 
 //form
 $('#chat-form').on('submit', function(e) {
@@ -85,11 +83,9 @@ $('#chat-form').on('submit', function(e) {
     var input = $('[name=message]');
 
     socket.emit('createMessage', {
-        from: 'User',
         text: input.val()
     }, function(data) {
         input.val('');
-        // console.log(data);
     });
 });
 
@@ -107,7 +103,6 @@ locationBtn.on('click', function() {
 
     //require https to work, may be block by a browser
     geolocation.getCurrentPosition(function(pos) {
-        console.log(pos);
         socket.emit('location', {
             latitude: pos.coords.latitude,
             longitude: pos.coords.longitude
