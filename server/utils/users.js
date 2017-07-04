@@ -1,8 +1,3 @@
-//addUser(id, name, room
-//removeUser(id)
-//getUser(id)
-//getAllUsers(room)
-
 class Users {
     constructor() {
         this.users = [];
@@ -11,6 +6,7 @@ class Users {
     addUser({id, name, room}) {
         let user = { id, name, room };
         this.users.push(user);
+        
         return user;
     }
 
@@ -18,14 +14,18 @@ class Users {
         var user = this.getUser(id);
 
         if (user) {
-            this.users = this.users.filter(user => +user.id !== id);
+            this.users = this.users.filter(user => user.id !== id);
         }
 
         return user;
     }
 
     getUser(id) {
-        return this.users.filter(user => +user.id === +id)[0];
+        return this.users.filter(user => user.id === id)[0];
+    }
+
+    getUserByName(name) {
+        return this.users.filter(user => (user.name).toLowerCase() === (name).toLowerCase())[0];
     }
 
     getAllUsers(room) {

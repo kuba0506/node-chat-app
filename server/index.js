@@ -10,10 +10,12 @@ var port = process.env.PORT || 3000;
 
 const { messageGenerator, locationMessageGenerator } = require('./utils/message');
 const { isRealString } = require('./utils/validation');
+const { Users } = require('./utils/users');
 
 var app = express();
 var server = http.createServer(app);
 var io = socketIO(server);
+var users = new Users();
 
 //event listener
 io.on('connection', (socket) => {
@@ -21,11 +23,26 @@ io.on('connection', (socket) => {
 
     socket.on('join', (params, callback) => {
         if (!isRealString(params.name) || !isRealString(params.room)) {
-            callback('Name and room is required!');
+            return callback('Name and room is required!');
         }
 
         //join room
-        socket.join(params.room);
+        let userInChat = users.getUserByName(params.name);
+        
+        //adds only unique users
+        if(!userInChat) {
+            socket.join(params.room);
+            users.removeUser(socket.id); //remove user form others room
+            users.addUser({ //add user to a room
+                id: socket.id,
+                name: params.name,
+                room: params.room
+            });
+            io.to(params.room).emit('updateUserList', users.getAllUsers(params.room));
+
+            socket.broadcast.to(params.room).emit('newMessage', messageGenerator('Admin', `${params.name} joined chat!`));
+        }
+        socket.emit('newMessage', messageGenerator('Admin', 'Welcome to the chat!'));
 
         //leave room
         // socket.leave(params.room);
@@ -36,8 +53,6 @@ io.on('connection', (socket) => {
         //socket.broadcast.to(room.name).emit() - send to all except for the sender
         //socket.emit - to one user
 
-        socket.emit('newMessage', messageGenerator('Admin', 'Welcome to the chat!'));
-        socket.broadcast.to(params.room).emit('newMessage', messageGenerator('Admin', `${params.name} joined chat!`));
         //emit event to all but this socket
         //socket.broadcast.emit('newMessage', messageGenerator('Admin', 'New user joined chat!'));
 
@@ -46,23 +61,21 @@ io.on('connection', (socket) => {
 
     socket.on('createMessage', (msg, callback) => {
         console.log('New message from user: ', msg);
-
-        //emit event to all sockets
         io.emit('newMessage', messageGenerator(msg.from, msg.text))
-        //emit to all socket but this one
-        // socket.broadcast.emit('newMessage', messageGenerator(msg.from, msg.text))
-
-        //callback('You sent: '+  msg.text); //send event to the client
         callback();
     });
 
     socket.on('location', (coords) => {
-        // io.emit('newMessage', messageGenerator('Admin', `${coords.latitude}, ${coords.longitude}`));
         io.emit('newLocationMessage', locationMessageGenerator('Admin', coords.latitude, coords.longitude));
     });
 
-    socket.on('disconnect', (socket) => {
-        console.log(`User was disconnected!`);
+    socket.on('disconnect', () => {
+        var user = users.removeUser(socket.id);
+
+        if (user) {
+            io.to(user.room).emit('updateUserList', users.getAllUsers(user.room))
+            io.to(user.room).emit('newMessage', messageGenerator('Admin', `${user.name} has left chat!`))
+        }
     });
 });
 

@@ -27,13 +27,26 @@ socket.on('connect', function () {
             alert(err);
             window.location.href = '/';
         } else {
-            console.log('No error!');
+            console.log('You have successfully joined chat!');
         }
     });
 });
 
 socket.on('disconnect', function () {
     console.log(`Disconnected from server!`);
+});
+
+socket.on('updateUserList', function(users) {
+    console.log('Users list', users);
+    var list = $('#users');
+    var ol = $('<ol/>');
+
+    users.forEach(function(user) {
+        ol.append($('<li/>').text(user));
+    });
+    //update user list
+    // list.empty().append(ol);
+    list.html(ol);
 });
 
 socket.on('newMessage', function (msg) {
