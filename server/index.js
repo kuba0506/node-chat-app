@@ -1,12 +1,9 @@
-const path = require('path');
 const http = require('http');
 
 const express = require('express');
 const socketIO = require('socket.io');
 
-const publicPath = path.join(__dirname, '../public');
-const node_modules = path.join(__dirname, '../node_modules');
-var port = process.env.PORT || 3000;
+const { publicPath, node_modules, port } = require('./config/config');
 
 const { messageGenerator, locationMessageGenerator } = require('./utils/message');
 const { isRealString } = require('./utils/validation');
@@ -28,9 +25,9 @@ io.on('connection', (socket) => {
 
         //join room
         let userInChat = users.getUserByName(params.name);
-        
+
         //adds only unique users
-        if(!userInChat) {
+        if (!userInChat) {
             socket.join(params.room);
             users.removeUser(socket.id); //remove user form others room
             users.addUser({ //add user to a room
